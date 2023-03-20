@@ -1,6 +1,6 @@
 //Get DOM elements
 const rootElem = document.getElementById("root");
-const eachEpisode = document.querySelector('#episode');
+const container = document.querySelector('#episode');
 
 function setup() {
   const allEpisodes = getAllEpisodes();
@@ -8,7 +8,6 @@ function setup() {
 }
 
 function makePageForEpisodes(episodeList) {
-  console.log(episodeList)
   let result = '';
   episodeList.forEach(episode => {
     let episodeNum = episode.number < 10? `0${episode.number}` : episode.number;
@@ -23,7 +22,7 @@ function makePageForEpisodes(episodeList) {
         </div>
     </div>`
   })
-  episode.innerHTML = result
+  container.innerHTML = result
 }
 
 window.onload = setup;
