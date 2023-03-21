@@ -4,6 +4,22 @@
 body {
   background-color: #b7b7b779;
 }
+
+header {
+  height: 50px;
+}
+
+.input__wrap {
+  display: flex;
+  align-items: center;
+  column-gap: 2rem;
+}
+
+input {
+  height: 30px;
+  margin-left: 3rem;
+ 
+}
 .container {
   display: flex;
   flex-direction: row;
