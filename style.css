@@ -17,8 +17,12 @@ header {
 
 input {
   height: 30px;
-  margin-left: 3rem;
  
+}
+
+select {
+  height: 36px;
+  margin-left: 3rem;
 }
 .container {
   display: flex;

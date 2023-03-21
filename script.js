@@ -1,7 +1,8 @@
 //Get DOM elements
-const container = document.querySelector('#episode');
-const finder = document.querySelector('input');
-const findOutput = document.querySelector('#output');
+const episodeContainer = document.querySelector('#episode');
+const searchInput = document.querySelector('input');
+const searchResult = document.querySelector('#output');
+const seriesDropdown = document.querySelector('#series');
 
 const url = 'https://api.tvmaze.com/shows/82/episodes';
 
@@ -12,6 +13,7 @@ async function fetchEpisodes () {
     const response = await fetch(url);
     episodesList = await response.json();
     makePageForEpisodes(episodesList);
+    makeDropdownForEpisodes();
     console.log("Fetched")
   } catch (error) {
     console.error(error);
@@ -33,13 +35,27 @@ function makePageForEpisodes(episodeList) {
         </div>
     </div>`
   })
-  container.innerHTML = result
+  episodeContainer.innerHTML = result;
+}
+
+function makeDropdownForEpisodes() {
+  episodesList.forEach(episode => {
+    let episodeNum = episode.number < 10? `0${episode.number}` : episode.number;
+    seriesDropdown.innerHTML  += `<option value="${episode.name}">S0${episode.season}E${episodeNum} - ${episode.name}</option>`;
+  })
+}
+
+function getSelectedEpisode(selectedEpisode) {
+  const foundEpisode = episodesList.filter(episode => {
+    return episode.name.includes(selectedEpisode);
+  })
+  makePageForEpisodes(foundEpisode);
 }
 
 fetchEpisodes();
 
 function getFinderValue () {
-  return finder.value.trim().toLocaleLowerCase().replace(/[^a-zA-Z0-9]/g, ''); 
+  return searchInput.value.trim().toLocaleLowerCase().replace(/[^a-zA-Z0-9]/g, ''); 
 }
 
 function displayFounded() {
@@ -49,9 +65,17 @@ function displayFounded() {
     episode.summary.toLocaleLowerCase().includes(finderValue);
   })
   makePageForEpisodes(filteredEpisodes);
-  findOutput.textContent = `Displaying ${filteredEpisodes.length}/${episodesList.length} episodes`;
+  searchResult.textContent = `Displaying ${filteredEpisodes.length}/${episodesList.length} episodes`;
 }
 
-finder.addEventListener('keydown', (event) => {
+searchInput.addEventListener('keydown', () => {
  displayFounded();
+})
+
+seriesDropdown.addEventListener('change', (event) => {
+  if (event.target.value !== '') {
+    getSelectedEpisode(event.target.value)
+  } else {
+    makePageForEpisodes(episodesList);
+  }
 })
