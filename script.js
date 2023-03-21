@@ -1,9 +1,12 @@
 //Get DOM elements
 const episodeContainer = document.querySelector('#episode');
+const showContainer = document.querySelector('#showContainer');
 const searchInput = document.querySelector('input');
 const searchResult = document.querySelector('#output');
 const showsDropdown = document.querySelector('#shows');
 const seriesDropdown = document.querySelector('#series');
+const displayShow = document.querySelector('#displayShow');
+
 
 // Assign global variables
 const listOfShows = 'https://api.tvmaze.com/shows';
@@ -18,7 +21,9 @@ async function fetchShows() {
     selectionOfShows.sort((a, b) => {
       return a.name.localeCompare(b.name);
     })
+    makePageForShows(selectionOfShows);
     makeDropdownForShows(selectionOfShows);
+    console.log(selectionOfShows)
   } catch (error) {
     console.error(error);
   }
@@ -40,14 +45,39 @@ async function fetchEpisodes (show) {
 
 function makeDropdownForShows(selectionOfShows) {
   selectionOfShows.forEach(show => {
-    showsDropdown.innerHTML += `<option value="${show.url}">${show.name}</option>`;
+    showsDropdown.innerHTML += `<option value="${show.id}">${show.name}</option>`;
   })
 }
 
 function getNumber(number) {
   return number < 10? `0${number}` : number;
 }
+// Main function to display all shows
+function makePageForShows(showList) {
+  let result = '';
+  showList.forEach(show => {
+    result += `
+    <div class="each__show">
+     <h1>${show.name}</h1>
+      <div class="show__wrap">
+        <div class="content__wrap">
+          <img src="${show.image.medium}" alt="">
+          ${show.summary}
+        </div>
+        <div class="props">
+          <p>Rated: ${show.rating.average}</p>
+          <p>Genres: ${show.genres}</p>
+          <p>Status: ${show.status}</p>
+          <p>Runtime: ${show.runtime}</p>
+        </div>
+      </div>
+    </div>` 
+  })
+  showContainer.classList.remove('hidden');
+  showContainer.innerHTML = result;
+}
 
+// Main function to display all episodes
 function makePageForEpisodes(episodeList) {
   let result = '';
   episodeList.forEach(episode => {
@@ -64,6 +94,7 @@ function makePageForEpisodes(episodeList) {
         </div>
     </div>`
   })
+  showContainer.classList.add('hidden');
   episodeContainer.innerHTML = result;
 }
 
@@ -77,6 +108,23 @@ function makeDropdownForEpisodes() {
   seriesDropdown.innerHTML = result;
 }
 
+// Two functions below get a/an show/episode and display it
+function getSelectedShow(selectedShow) {
+  const clickedShow = selectionOfShows.find(show => {
+    return show.name.includes(selectedShow);
+  }) 
+  const selectShow = selectionOfShows.filter(show => {
+    return show.name.includes(selectedShow);
+  })
+  const link = clickedShow._links.self.href;
+  show = `${link}/episodes`;
+  
+  fetchEpisodes(show);
+  setTimeout(()=> {
+    makePageForShows(selectShow);
+  }, 2000);
+}
+
 function getSelectedEpisode(selectedEpisode) {
   const foundEpisode = episodesList.filter(episode => {
     return episode.name.includes(selectedEpisode);
@@ -84,9 +132,7 @@ function getSelectedEpisode(selectedEpisode) {
   makePageForEpisodes(foundEpisode);
 }
 
-
-fetchEpisodes(show);
-
+// Function below gets value and returns trimmed and lower cased string/value
 function getFinderValue () {
   return searchInput.value.trim().toLocaleLowerCase().replace(/[^a-zA-Z0-9]/g, ''); 
 }
@@ -101,16 +147,20 @@ function displayFounded() {
   searchResult.textContent = `Displaying ${filteredEpisodes.length}/${episodesList.length} episodes`;
 }
 
+// List of event listeners
 searchInput.addEventListener('keydown', () => {
  displayFounded();
 })
 
 showsDropdown.addEventListener('change', (event) => {
-  const regex = /[^\d]/g;
-  let showId = event.target.value.replace(regex, '');
- 
+  if (event.target.value !== '') {
+ // const regex = /[^\d]/g;
+  let showId = event.target.value;
   show = `https://api.tvmaze.com/shows/${showId}/episodes`;
   fetchEpisodes(show);
+  } else {
+    makePageForShows(selectionOfShows)
+  }
 })
 
 seriesDropdown.addEventListener('change', (event) => {
@@ -119,4 +169,14 @@ seriesDropdown.addEventListener('change', (event) => {
   } else {
     makePageForEpisodes(episodesList);
   }
+})
+
+showContainer.addEventListener('click', (event) => {
+  if (event.target.tagName === 'H1') {
+    getSelectedShow(event.target.textContent);
+  }
+})
+
+displayShow.addEventListener('click', () => {
+  makePageForShows(selectionOfShows);
 })
