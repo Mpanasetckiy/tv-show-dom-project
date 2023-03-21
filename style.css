@@ -13,6 +13,7 @@ header {
   display: flex;
   align-items: center;
   column-gap: 2rem;
+  padding-left: 3rem;
 }
 
 input {
@@ -22,7 +23,7 @@ input {
 
 select {
   height: 36px;
-  margin-left: 3rem;
+  
 }
 .container {
   display: flex;
