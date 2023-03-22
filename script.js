@@ -2,7 +2,7 @@
 const episodeContainer = document.querySelector('#episode');
 const showContainer = document.querySelector('#showContainer');
 const searchShow = document.querySelector('#searchShow');
-const searchInput = document.querySelector('#searchEpisode');
+const searchEpisode = document.querySelector('#searchEpisode');
 const searchResult = document.querySelector('#output');
 const showsDropdown = document.querySelector('#shows');
 const seriesDropdown = document.querySelector('#series');
@@ -15,6 +15,7 @@ let show = 'https://api.tvmaze.com/shows/82/episodes';
 let selectionOfShows = [];
 let episodesList = [];
 
+// Fetch all shows and display it
 async function fetchShows() {
   try {
     const response = await fetch(listOfShows);
@@ -28,10 +29,11 @@ async function fetchShows() {
   } catch (error) {
     console.error(error);
   }
-}
+};
 
 fetchShows();
 
+// Fetch episodes of the selected show
 async function fetchEpisodes (show) {
   try {
     const response = await fetch(show);
@@ -42,17 +44,20 @@ async function fetchEpisodes (show) {
   } catch (error) {
     console.error(error);
   }
-}
+};
 
+// Create dropdown for given shows
 function makeDropdownForShows(selectionOfShows) {
   selectionOfShows.forEach(show => {
     showsDropdown.innerHTML += `<option value="${show.name}">${show.name}</option>`;
   })
-}
+};
 
+// Transform season and episode numbers in correct format
 function getNumber(number) {
   return number < 10? `0${number}` : number;
-}
+};
+
 // Main function to display all shows
 function makePageForShows(showList) {
   let result = '';
@@ -77,7 +82,7 @@ function makePageForShows(showList) {
   showContainer.classList.remove('hidden');
   showContainer.innerHTML = result;
   episodeContainer.innerHTML = '';
-}
+};
 
 // Main function to display all episodes
 function makePageForEpisodes(episodeList) {
@@ -98,8 +103,9 @@ function makePageForEpisodes(episodeList) {
   })
   showContainer.classList.add('hidden');
   episodeContainer.innerHTML = result;
-}
+};
 
+// Create dropdown for selected episodes
 function makeDropdownForEpisodes() {
   let result =  '<option value="">Choose an episode</option>';
   episodesList.forEach(episode => {
@@ -108,16 +114,15 @@ function makeDropdownForEpisodes() {
      result += `<option value="${episode.name}">S${episodeSeason}E${episodeNum} - ${episode.name}</option>`;
   })
   seriesDropdown.innerHTML = result;
-}
+};
 
 // These 3 functions below get a/an show/episode and display it
 function getSelectedShow(showName) {
-  
   const selectedShow = selectionOfShows.filter(show => {
     return show.name.includes(showName);
   })
   makePageForShows(selectedShow);
-}
+};
 
 function getEpisodesOfSelectedShow(selectedShow) {
   const clickedShow = selectionOfShows.find(show => {
@@ -128,35 +133,37 @@ function getEpisodesOfSelectedShow(selectedShow) {
   fetchEpisodes(show);
   seriesDropdown.classList.remove("hidden");
   showsDropdown.classList.add('hidden');
-  searchInput.classList.remove('hidden');
+  searchEpisode.classList.remove('hidden');
   searchShow.classList.add('hidden');
   searchShow.value = '';
-}
+};
 
 function getSelectedEpisode(selectedEpisode) {
   const foundEpisode = episodesList.filter(episode => {
     return episode.name.includes(selectedEpisode);
   })
   makePageForEpisodes(foundEpisode);
-}
+};
 
 // Function below gets value and returns trimmed and lower cased string/value
-function getSearchInputValue () {
-  return searchInput.value.trim().toLocaleLowerCase().replace(/[^a-zA-Z0-9]/g, ''); 
-}
+function getSearchInputValue(searchInput) {
+  return searchInput.value.trim().toLocaleLowerCase().replace(/[^a-zA-Z0-9]/g, ' '); 
+};
 
+// Display retrieved show/s
 function displayShow() {
-  const searchShowValue = searchShow.value.toLocaleLowerCase().trim().replace(/[^a-zA-Z0-9]/g, ' ');
+  const searchShowValue = getSearchInputValue(searchShow);
   console.log(searchShowValue)
   const filteredShows = selectionOfShows.filter(show => {
     return show.name.toLocaleLowerCase().includes(searchShowValue) ||
     show.summary.toLocaleLowerCase().includes(searchShowValue);
   })
   makePageForShows(filteredShows);
-}
+};
 
+// Display retrieved episode/s
 function displayEpisode() {
-  const finderValue = getSearchInputValue();
+  const finderValue = getSearchInputValue(searchEpisode);
   const filteredEpisodes = episodesList.filter(episode => {
     return episode.name.toLocaleLowerCase().includes(finderValue) ||
     episode.summary.toLocaleLowerCase().includes(finderValue);
@@ -166,7 +173,7 @@ function displayEpisode() {
 };
 
 // List of event listeners
-searchInput.addEventListener('keydown', () => {
+searchEpisode.addEventListener('keydown', () => {
  displayEpisode();
 });
 
@@ -197,7 +204,7 @@ showContainer.addEventListener('click', (event) => {
 });
 
 buttonShow.addEventListener('click', () => {
-  searchInput.classList.add('hidden');
+  searchEpisode.classList.add('hidden');
   showsDropdown.classList.remove('hidden');
   seriesDropdown.classList.add('hidden');
   searchShow.classList.remove('hidden');
