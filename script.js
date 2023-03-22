@@ -9,6 +9,7 @@ const seriesDropdown = document.querySelector('#series');
 const buttonShow = document.querySelector('#displayShow');
 
 
+
 // Assign global variables
 const listOfShows = 'https://api.tvmaze.com/shows';
 let show = 'https://api.tvmaze.com/shows/82/episodes';
@@ -61,14 +62,26 @@ function getNumber(number) {
 // Main function to display all shows
 function makePageForShows(showList) {
   let result = '';
+  const maxLength = 300;
+  
   showList.forEach(show => {
+    let summary = show.summary;
+    let truncatedSummary = show.summary.substring(0, maxLength).trim();
+    let btnReadMore = "hidden";
+    if (show.summary.length > maxLength) {
+      summary = truncatedSummary
+      btnReadMore = '';
+    }
     result += `
     <div class="each__show">
      <h1>${show.name}</h1>
       <div class="show__wrap">
         <div class="content__wrap">
           <img src="${show.image.medium}" alt="">
-          ${show.summary}
+          <div>
+          <span class="${show.id}" id="summaryText">${summary}</span>
+          <span id="read-more-button" class="${btnReadMore}">...read more</span>
+          </div>
         </div>
         <div class="props">
           <p>Rated: ${show.rating.average}</p>
@@ -172,6 +185,14 @@ function displayEpisode() {
   searchResult.textContent = `Displaying ${filteredEpisodes.length}/${episodesList.length} episodes`;
 };
 
+// Expand clicked summary
+function expandSummary(spanId, span) {
+  const searchSummary = selectionOfShows.find(show => {
+    return show.id === spanId;
+  })
+  span.innerHTML = searchSummary.summary;  
+}
+
 // List of event listeners
 searchEpisode.addEventListener('keydown', () => {
  displayEpisode();
@@ -210,3 +231,12 @@ buttonShow.addEventListener('click', () => {
   searchShow.classList.remove('hidden');
   makePageForShows(selectionOfShows);
 });
+
+document.addEventListener('click', (event) => {
+  if (event.target.tagName === "SPAN") {
+  const spanSummary = event.target.parentNode.parentNode;
+  const spanId = Number(event.target.parentNode.parentNode.className);
+  event.target.classList.add('hidden');
+  expandSummary(spanId, spanSummary);
+  } 
+})
