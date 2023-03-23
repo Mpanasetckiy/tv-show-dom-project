@@ -128,3 +128,12 @@ img {
 .hidden {
   display: none;
 }
+
+.navbar {
+  display: flex;
+    justify-content: center;
+}
+
+.pagination__pages {
+  display: flex;
+}

@@ -7,14 +7,15 @@ const searchResult = document.querySelector('#output');
 const showsDropdown = document.querySelector('#shows');
 const seriesDropdown = document.querySelector('#series');
 const buttonShow = document.querySelector('#displayShow');
-
-
+const pageButton = document.querySelector('.pagination');
+const pagesContainer = document.querySelector('.pagination__pages');
 
 // Assign global variables
 const listOfShows = 'https://api.tvmaze.com/shows';
 let show = 'https://api.tvmaze.com/shows/82/episodes';
 let selectionOfShows = [];
 let episodesList = [];
+let activePageButton = 1;
 
 // Fetch all shows and display it
 async function fetchShows() {
@@ -26,6 +27,7 @@ async function fetchShows() {
     })
     makePageForShows(selectionOfShows);
     makeDropdownForShows(selectionOfShows);
+    
     console.log(selectionOfShows)
   } catch (error) {
     console.error(error);
@@ -63,8 +65,8 @@ function getNumber(number) {
 function makePageForShows(showList) {
   let result = '';
   const maxLength = 300;
-  
-  showList.forEach(show => {
+  const page = showList.slice(0, 5);
+  page.forEach(show => {
     let summary = show.summary;
     let truncatedSummary = show.summary.substring(0, maxLength).trim();
     let btnReadMore = "hidden";
@@ -95,6 +97,7 @@ function makePageForShows(showList) {
   showContainer.classList.remove('hidden');
   showContainer.innerHTML = result;
   episodeContainer.innerHTML = '';
+  
 };
 
 // Main function to display all episodes
@@ -117,6 +120,31 @@ function makePageForEpisodes(episodeList) {
   showContainer.classList.add('hidden');
   episodeContainer.innerHTML = result;
 };
+
+function renderPage(list, pageSize) {
+  const startIndex = (activePageButton - 1) * pageSize;
+  const endIndex = activePageButton * pageSize;
+  const page = list.slice(startIndex, endIndex);
+  makePageForShows(page);
+}
+
+const renderActivePageBtn = () => {
+  pagesContainer.innerHTML = `
+  <li class="page-item"><a class="page-link">${activePageButton - 1}</a></li>
+  <li class="page-item"><a class="page-link">${activePageButton}</a></li>
+  <li class="page-item"><a class="page-link">${activePageButton + 1}</a></li>`;
+  const pageBar = document.querySelectorAll('.page-link');
+  pageBar.forEach(page => {
+    console.log(page.textContent)
+    if (page.textContent != activePageButton) {
+      page.classList.remove('active');
+    } else if (page.textContent == activePageButton) {
+      page.classList.add('active');
+    }
+  })
+  
+  console.log(activePageButton)
+}
 
 // Create dropdown for selected episodes
 function makeDropdownForEpisodes() {
@@ -229,7 +257,7 @@ buttonShow.addEventListener('click', () => {
   showsDropdown.classList.remove('hidden');
   seriesDropdown.classList.add('hidden');
   searchShow.classList.remove('hidden');
-  makePageForShows(selectionOfShows);
+  renderPage(selectionOfShows, 5)
 });
 
 document.addEventListener('click', (event) => {
@@ -239,4 +267,19 @@ document.addEventListener('click', (event) => {
   event.target.classList.add('hidden');
   expandSummary(spanId, spanSummary);
   } 
+});
+
+pageButton.addEventListener('click', (event) => {
+  const pageNum = Number(event.target.textContent);
+  const pageContent = event.target.textContent;
+  if (!isNaN(pageNum) && activePageButton < selectionOfShows.length / 5) {
+    activePageButton = pageNum;
+    renderPage(selectionOfShows, 5)
+    renderActivePageBtn(pageContent)
+  } else if (pageContent === 'Next' && activePageButton < selectionOfShows.length / 5) {
+    activePageButton++;
+    renderPage(selectionOfShows, 5)
+    renderActivePageBtn();
+  }
 })
+
