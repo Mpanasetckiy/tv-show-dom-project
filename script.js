@@ -10,12 +10,20 @@ const buttonShow = document.querySelector('#displayShow');
 const pageButton = document.querySelector('.pagination');
 const pagesContainer = document.querySelector('.pagination__pages');
 
+// DOM elements for carousel
+const carousel = document.querySelector('.carousel');
+const carouselContainer = document.querySelector('.carousel-container');
+const prevBtn = document.querySelector('.prev-btn');
+const nextBtn = document.querySelector('.next-btn');
+
 // Assign global variables
 const listOfShows = 'https://api.tvmaze.com/shows';
 let show = 'https://api.tvmaze.com/shows/82/episodes';
 let selectionOfShows = [];
 let episodesList = [];
 let activePageButton = 1;
+let slideWidth = carousel.offsetWidth / 5.45;
+let slideIndex = 0;
 
 // Fetch all shows and display it
 async function fetchShows() {
@@ -221,6 +229,32 @@ function expandSummary(spanId, span) {
   span.innerHTML = searchSummary.summary;  
 }
 
+// Functionality for carousel
+function startCarousel() {
+  setInterval(() => {
+    slideIndex++;
+    if (slideIndex >= carouselContainer.children.length) {
+      slideIndex = 0;
+    }
+    addCarouselPoster();
+    carouselContainer.style.transform = `translateX(-${slideIndex * slideWidth}px)`;
+  }, 3000);
+};
+
+function addCarouselPoster() {
+  const poster = selectionOfShows[Math.floor(Math.random() * selectionOfShows.length)].image.medium;
+  carouselContainer.innerHTML += `<img src="${poster}">`;
+};
+ 
+startCarousel();
+
+function getSelectedPoster(poster) {
+  const show = selectionOfShows.filter(show => {
+     return show.image.medium.includes(poster);
+  })
+  makePageForShows(show);
+}
+
 // List of event listeners
 searchEpisode.addEventListener('keydown', () => {
  displayEpisode();
@@ -283,3 +317,25 @@ pageButton.addEventListener('click', (event) => {
   }
 })
 
+prevBtn.addEventListener('click', () => {
+  slideIndex--;
+  if (slideIndex < 0) {
+    slideIndex = carouselContainer.children.length - 1;
+  }
+  carouselContainer.style.transform = `translateX(-${slideIndex * slideWidth}px)`;
+});
+
+nextBtn.addEventListener('click', () => {
+  slideIndex++;
+  if (slideIndex >= carouselContainer.children.length) {
+    slideIndex = 0;
+  }
+  carouselContainer.style.transform = `translateX(-${slideIndex * slideWidth}px)`;
+  addCarouselPoster();
+});
+
+carouselContainer.addEventListener('click', (event) => {
+  if (event.target.tagName === 'IMG') {
+    getSelectedPoster(event.target.getAttribute('src'));
+  }
+});
