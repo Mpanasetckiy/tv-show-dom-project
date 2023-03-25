@@ -130,6 +130,7 @@ function makePageForEpisodes(episodeList) {
   episodeContainer.innerHTML = result;
 };
 
+// Pagination functionality
 function renderPage(list, pageSize) {
   const startIndex = (activePageButton - 1) * pageSize;
   const endIndex = activePageButton * pageSize;
@@ -146,6 +147,42 @@ const renderActivePageBtn = () => {
       page.classList.add('active');
     }
   })
+}
+
+function addNewPageBtn() {
+  const numOfPages = pagesContainer.children.length;
+  activePageButton++;
+  renderPage(selectionOfShows, 5);
+  renderActivePageBtn();
+  if (activePageButton > numOfPages) {
+    if (numOfPages >= 5) {
+      const firstPageNum = activePageButton - 5;
+      const firstPage = pagesContainer.querySelector(`.page-item:nth-child(${firstPageNum})`);
+      for (let i = 1; i < firstPageNum; i++) {
+        const page = pagesContainer.querySelector(`.page-item:nth-child(${i})`);
+        page.style.display = 'none';
+      }
+      firstPage.style.display = 'none';
+    }
+  pagesContainer.innerHTML += `<li class="page-item"><a class="page-link">${activePageButton}</a></li>`;
+  }
+  renderActivePageBtn();
+}
+
+function moveBackPage() {
+  const numOfPages = pagesContainer.children.length;
+  if (activePageButton > 1) {
+    activePageButton--;
+    renderPage(selectionOfShows, 5);
+    renderActivePageBtn();
+    if (numOfPages >= 6) {
+      const firstPageNum = numOfPages - 5;
+      const firstPage = pagesContainer.querySelector(`.page-item:nth-child(${firstPageNum})`);
+      const lastPage = pagesContainer.querySelector(`.page-item:nth-child(${numOfPages})`)
+      lastPage.remove();
+      firstPage.style.display = '';
+    }
+  }
 }
 
 // Create dropdown for selected episodes
@@ -186,7 +223,10 @@ function getSelectedEpisode(selectedEpisode) {
 
 // Function below gets value and returns trimmed and lower cased string/value
 function getSearchInputValue(searchInput) {
-  return searchInput.value.trim().toLocaleLowerCase().replace(/[^a-zA-Z0-9]/g, ' '); 
+  return searchInput.value
+  .trim()
+  .toLocaleLowerCase()
+  .replace(/[^a-zA-Z0-9]/g, ' '); 
 };
 
 // Display retrieved show/s
@@ -306,42 +346,6 @@ document.addEventListener('click', (event) => {
   expandSummary(spanId, spanSummary);
   } 
 });
-
-function addNewPageBtn() {
-  const numOfPages = pagesContainer.children.length;
-  activePageButton++;
-  renderPage(selectionOfShows, 5);
-  renderActivePageBtn();
-  if (activePageButton > numOfPages) {
-    if (numOfPages >= 5) {
-      const firstPageNum = activePageButton - 5;
-      const firstPage = pagesContainer.querySelector(`.page-item:nth-child(${firstPageNum})`);
-      for (let i = 1; i < firstPageNum; i++) {
-        const page = pagesContainer.querySelector(`.page-item:nth-child(${i})`);
-        page.style.display = 'none';
-      }
-      firstPage.style.display = 'none';
-    }
-  pagesContainer.innerHTML += `<li class="page-item"><a class="page-link">${activePageButton}</a></li>`;
-  }
-  renderActivePageBtn();
-}
-
-function moveBackPage() {
-  const numOfPages = pagesContainer.children.length;
-  if (activePageButton > 1) {
-    activePageButton--;
-    renderPage(selectionOfShows, 5);
-    renderActivePageBtn();
-    if (numOfPages >= 6) {
-      const firstPageNum = activePageButton - 4;
-      const firstPage = pagesContainer.querySelector(`.page-item:nth-child(${firstPageNum})`);
-      const lastPage = pagesContainer.querySelector(`.page-item:nth-child(${activePageButton + 1})`)
-      lastPage.remove();
-      firstPage.style.display = '';
-    }
-  }
-}
 
 pageButton.addEventListener('click', (event) => {
   const pageNum = Number(event.target.textContent);
