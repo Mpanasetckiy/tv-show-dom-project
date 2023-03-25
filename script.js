@@ -72,7 +72,7 @@ function getNumber(number) {
 // Main function to display all shows
 function makePageForShows(showList) {
   let result = '';
-  const maxLength = 300;
+  const maxLength = 350;
   const page = showList.slice(0, 5);
   page.forEach(show => {
     let summary = show.summary;
@@ -102,10 +102,10 @@ function makePageForShows(showList) {
       </div>
     </div>` 
   })
+  showList.length < 5? pageButton.classList.add('hidden'):pageButton.classList.remove('hidden'); // Check whether to show pagination
   showContainer.classList.remove('hidden');
   showContainer.innerHTML = result;
   episodeContainer.innerHTML = '';
-  
 };
 
 // Main function to display all episodes
@@ -125,6 +125,7 @@ function makePageForEpisodes(episodeList) {
         </div>
     </div>`
   })
+  searchResult.textContent = `Displaying ${episodeList.length}/${episodesList.length} episodes`;
   showContainer.classList.add('hidden');
   episodeContainer.innerHTML = result;
 };
@@ -135,28 +136,26 @@ function renderPage(list, pageSize) {
   const page = list.slice(startIndex, endIndex);
   makePageForShows(page);
 }
+// pagesContainer.innerHTML = `
+// <li class="page-item"><a class="page-link">${activePageButton - 1}</a></li>
+// <li class="page-item"><a class="page-link">${activePageButton}</a></li>
+// <li class="page-item"><a class="page-link">${activePageButton + 1}</a></li>`;
 
 const renderActivePageBtn = () => {
-  pagesContainer.innerHTML = `
-  <li class="page-item"><a class="page-link">${activePageButton - 1}</a></li>
-  <li class="page-item"><a class="page-link">${activePageButton}</a></li>
-  <li class="page-item"><a class="page-link">${activePageButton + 1}</a></li>`;
   const pageBar = document.querySelectorAll('.page-link');
   pageBar.forEach(page => {
-    console.log(page.textContent)
     if (page.textContent != activePageButton) {
       page.classList.remove('active');
     } else if (page.textContent == activePageButton) {
       page.classList.add('active');
     }
   })
-  
   console.log(activePageButton)
 }
 
 // Create dropdown for selected episodes
 function makeDropdownForEpisodes() {
-  let result =  '<option value="">Choose an episode</option>';
+  let result =  '<option value="">Choose episode</option>';
   episodesList.forEach(episode => {
     let episodeNum = getNumber(episode.number);
     let episodeSeason = getNumber(episode.season);
@@ -180,10 +179,6 @@ function getEpisodesOfSelectedShow(selectedShow) {
   const link = clickedShow._links.self.href;
   show = `${link}/episodes`;
   fetchEpisodes(show);
-  seriesDropdown.classList.remove("hidden");
-  showsDropdown.classList.add('hidden');
-  searchEpisode.classList.remove('hidden');
-  searchShow.classList.add('hidden');
   searchShow.value = '';
 };
 
@@ -218,7 +213,6 @@ function displayEpisode() {
     episode.summary.toLocaleLowerCase().includes(finderValue);
   })
   makePageForEpisodes(filteredEpisodes);
-  searchResult.textContent = `Displaying ${filteredEpisodes.length}/${episodesList.length} episodes`;
 };
 
 // Expand clicked summary
@@ -255,6 +249,23 @@ function getSelectedPoster(poster) {
   makePageForShows(show);
 }
 
+// Two functions to display or hide bars
+function displayShowsBar() {
+    searchEpisode.classList.add('hidden');
+    seriesDropdown.classList.add('hidden');
+    showsDropdown.classList.remove('hidden');
+    searchShow.classList.remove('hidden');
+    searchResult.textContent = '';
+    searchEpisode.value = '';
+}
+
+function displayEpisodeBar() {
+  seriesDropdown.classList.remove("hidden");
+  searchEpisode.classList.remove('hidden');
+  showsDropdown.classList.add('hidden');
+  searchShow.classList.add('hidden');
+}
+
 // List of event listeners
 searchEpisode.addEventListener('keydown', () => {
  displayEpisode();
@@ -283,14 +294,12 @@ seriesDropdown.addEventListener('change', (event) => {
 showContainer.addEventListener('click', (event) => {
   if (event.target.tagName === 'H1') {
     getEpisodesOfSelectedShow(event.target.textContent);
+    displayEpisodeBar();
   }
 });
 
 buttonShow.addEventListener('click', () => {
-  searchEpisode.classList.add('hidden');
-  showsDropdown.classList.remove('hidden');
-  seriesDropdown.classList.add('hidden');
-  searchShow.classList.remove('hidden');
+  displayShowsBar();
   renderPage(selectionOfShows, 5)
 });
 
@@ -306,13 +315,14 @@ document.addEventListener('click', (event) => {
 pageButton.addEventListener('click', (event) => {
   const pageNum = Number(event.target.textContent);
   const pageContent = event.target.textContent;
-  if (!isNaN(pageNum) && activePageButton < selectionOfShows.length / 5) {
+  //activePageButton < selectionOfShows.length / 5
+  if (!isNaN(pageNum)) {
     activePageButton = pageNum;
-    renderPage(selectionOfShows, 5)
-    renderActivePageBtn(pageContent)
-  } else if (pageContent === 'Next' && activePageButton < selectionOfShows.length / 5) {
+    renderPage(selectionOfShows, 5);
+    renderActivePageBtn(pageContent);
+  } else if (pageContent === 'Next') {
     activePageButton++;
-    renderPage(selectionOfShows, 5)
+    renderPage(selectionOfShows, 5);
     renderActivePageBtn();
   }
 })
@@ -336,6 +346,7 @@ nextBtn.addEventListener('click', () => {
 
 carouselContainer.addEventListener('click', (event) => {
   if (event.target.tagName === 'IMG') {
+    displayShowsBar();
     getSelectedPoster(event.target.getAttribute('src'));
   }
 });
