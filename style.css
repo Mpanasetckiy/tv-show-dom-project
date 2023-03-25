@@ -98,6 +98,15 @@ h1:hover {
   display: flex;
   flex-direction: column;
 }
+.pagination .page-link.active {
+  background-color: var(--color-red);
+  color: #fff;
+}
+
+.pagination .page-link {
+  color: #000; 
+  border: unset;
+}
 .show__container {
   width: 90%;
   margin: 0 auto;

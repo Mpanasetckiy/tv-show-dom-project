@@ -136,10 +136,6 @@ function renderPage(list, pageSize) {
   const page = list.slice(startIndex, endIndex);
   makePageForShows(page);
 }
-// pagesContainer.innerHTML = `
-// <li class="page-item"><a class="page-link">${activePageButton - 1}</a></li>
-// <li class="page-item"><a class="page-link">${activePageButton}</a></li>
-// <li class="page-item"><a class="page-link">${activePageButton + 1}</a></li>`;
 
 const renderActivePageBtn = () => {
   const pageBar = document.querySelectorAll('.page-link');
@@ -150,7 +146,6 @@ const renderActivePageBtn = () => {
       page.classList.add('active');
     }
   })
-  console.log(activePageButton)
 }
 
 // Create dropdown for selected episodes
@@ -312,6 +307,42 @@ document.addEventListener('click', (event) => {
   } 
 });
 
+function addNewPageBtn() {
+  const numOfPages = pagesContainer.children.length;
+  activePageButton++;
+  renderPage(selectionOfShows, 5);
+  renderActivePageBtn();
+  if (activePageButton > numOfPages) {
+    if (numOfPages >= 5) {
+      const firstPageNum = activePageButton - 5;
+      const firstPage = pagesContainer.querySelector(`.page-item:nth-child(${firstPageNum})`);
+      for (let i = 1; i < firstPageNum; i++) {
+        const page = pagesContainer.querySelector(`.page-item:nth-child(${i})`);
+        page.style.display = 'none';
+      }
+      firstPage.style.display = 'none';
+    }
+  pagesContainer.innerHTML += `<li class="page-item"><a class="page-link">${activePageButton}</a></li>`;
+  }
+  renderActivePageBtn();
+}
+
+function moveBackPage() {
+  const numOfPages = pagesContainer.children.length;
+  if (activePageButton > 1) {
+    activePageButton--;
+    renderPage(selectionOfShows, 5);
+    renderActivePageBtn();
+    if (numOfPages >= 6) {
+      const firstPageNum = activePageButton - 4;
+      const firstPage = pagesContainer.querySelector(`.page-item:nth-child(${firstPageNum})`);
+      const lastPage = pagesContainer.querySelector(`.page-item:nth-child(${activePageButton + 1})`)
+      lastPage.remove();
+      firstPage.style.display = '';
+    }
+  }
+}
+
 pageButton.addEventListener('click', (event) => {
   const pageNum = Number(event.target.textContent);
   const pageContent = event.target.textContent;
@@ -321,9 +352,9 @@ pageButton.addEventListener('click', (event) => {
     renderPage(selectionOfShows, 5);
     renderActivePageBtn(pageContent);
   } else if (pageContent === 'Next') {
-    activePageButton++;
-    renderPage(selectionOfShows, 5);
-    renderActivePageBtn();
+    addNewPageBtn();
+  } else if (pageContent === 'Previous') {
+    moveBackPage();
   }
 })
 
