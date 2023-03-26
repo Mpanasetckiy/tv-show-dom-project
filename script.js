@@ -36,12 +36,11 @@ async function fetchShows() {
     })
     makePageForShows(selectionOfShows);
     makeDropdownForShows(selectionOfShows);
-    
     console.log(selectionOfShows)
   } catch (error) {
     console.error(error);
   }
-};
+}
 
 fetchShows();
 
@@ -57,19 +56,19 @@ async function fetchEpisodes (show) {
   } catch (error) {
     console.error(error);
   }
-};
+}
 
 // Create dropdown for given shows
 function makeDropdownForShows(selectionOfShows) {
   selectionOfShows.forEach(show => {
     showsDropdown.innerHTML += `<option value="${show.name}">${show.name}</option>`;
   })
-};
+}
 
 // Transform season and episode numbers in correct format
 function getNumber(number) {
   return number < 10? `0${number}` : number;
-};
+}
 
 // Main function to display all shows
 function makePageForShows(showList) {
@@ -108,7 +107,7 @@ function makePageForShows(showList) {
   showContainer.classList.remove('hidden');
   showContainer.innerHTML = result;
   episodeContainer.innerHTML = '';
-};
+}
 
 // Main function to display all episodes
 function makePageForEpisodes(episodeList) {
@@ -127,11 +126,11 @@ function makePageForEpisodes(episodeList) {
         </div>
     </div>`
   })
-  episodeList.length < 5? pageButton.classList.add('hidden') : pageButton.classList.remove('hidden');
   searchResult.textContent = `Displaying ${episodeList.length}/${episodesList.length} episodes`;
+  pageButton.classList.remove('hidden');
   showContainer.classList.add('hidden');
   episodeContainer.innerHTML = result;
-};
+}
 
 // Pagination functionality
 function isEpisodePageActiveOrShowPage() {
@@ -142,7 +141,7 @@ function isEpisodePageActiveOrShowPage() {
     renderPage(selectionOfShows, 5, null);
     console.log('rendered shows')
   }
-};
+}
 
 function renderPage(shows, pageSize, episodes) {
   const startIndex = (activePageButton - 1) * pageSize;
@@ -154,7 +153,7 @@ function renderPage(shows, pageSize, episodes) {
     const page = episodes.slice(startIndex, endIndex);
     makePageForEpisodes(page);
   }
-};
+}
 
 const renderActivePageBtn = () => {
   const pageBar = document.querySelectorAll('.page-link');
@@ -184,7 +183,7 @@ function addNewPageBtn() {
   pagesContainer.innerHTML += `<li class="page-item"><a class="page-link">${activePageButton}</a></li>`;
   }
   renderActivePageBtn();
-};
+}
 
 function moveBackPage() {
   const numOfPages = pagesContainer.children.length;
@@ -200,7 +199,7 @@ function moveBackPage() {
       firstPage.style.display = '';
     }
   }
-};
+}
 
 // Create dropdown for selected episodes
 function makeDropdownForEpisodes() {
@@ -211,7 +210,7 @@ function makeDropdownForEpisodes() {
      result += `<option value="${episode.name}">S${episodeSeason}E${episodeNum} - ${episode.name}</option>`;
   })
   seriesDropdown.innerHTML = result;
-};
+}
 
 // These 3 functions below get a/an show/episode and display it
 function getSelectedShow(showName) {
@@ -219,7 +218,7 @@ function getSelectedShow(showName) {
     return show.name.includes(showName);
   })
   makePageForShows(selectedShow);
-};
+}
 
 function getEpisodesOfSelectedShow(selectedShow) {
   const clickedShow = selectionOfShows.find(show => {
@@ -229,14 +228,14 @@ function getEpisodesOfSelectedShow(selectedShow) {
   show = `${link}/episodes`;
   fetchEpisodes(show);
   searchShow.value = '';
-};
+}
 
 function getSelectedEpisode(selectedEpisode) {
   const foundEpisode = episodesList.filter(episode => {
     return episode.name.includes(selectedEpisode);
   })
   makePageForEpisodes(foundEpisode);
-};
+}
 
 // Function below gets value and returns trimmed and lower cased string/value
 function getSearchInputValue(searchInput) {
@@ -244,7 +243,7 @@ function getSearchInputValue(searchInput) {
   .trim()
   .toLocaleLowerCase()
   .replace(/[^a-zA-Z0-9]/g, ' '); 
-};
+}
 
 // Display retrieved show/s
 function displayShow() {
@@ -254,7 +253,7 @@ function displayShow() {
     show.summary.toLocaleLowerCase().includes(searchShowValue);
   })
   makePageForShows(filteredShows);
-};
+}
 
 // Display retrieved episode/s
 function displayEpisode() {
@@ -264,7 +263,7 @@ function displayEpisode() {
     episode.summary.toLocaleLowerCase().includes(finderValue);
   })
   makePageForEpisodes(filteredEpisodes);
-};
+}
 
 // Expand clicked summary
 function expandSummary(spanId, span) {
@@ -272,7 +271,7 @@ function expandSummary(spanId, span) {
     return show.id === spanId;
   })
   span.innerHTML = searchSummary.summary;  
-};
+}
 
 // Functionality for carousel
 function startCarousel() {
@@ -284,12 +283,12 @@ function startCarousel() {
     addCarouselPoster();
     carouselContainer.style.transform = `translateX(-${slideIndex * slideWidth}px)`;
   }, 3000);
-};
+}
 
 function addCarouselPoster() {
   const poster = selectionOfShows[Math.floor(Math.random() * selectionOfShows.length)].image.medium;
   carouselContainer.innerHTML += `<img src="${poster}">`;
-};
+}
  
 startCarousel();
 
@@ -298,7 +297,7 @@ function getSelectedPoster(poster) {
      return show.image.medium.includes(poster);
   })
   makePageForShows(show);
-};
+}
 
 // Two functions to display or hide bars
 function displayShowsBar() {
@@ -308,14 +307,14 @@ function displayShowsBar() {
     searchShow.classList.remove('hidden');
     searchResult.textContent = '';
     searchEpisode.value = '';
-};
+}
 
 function displayEpisodeBar() {
   seriesDropdown.classList.remove("hidden");
   searchEpisode.classList.remove('hidden');
   showsDropdown.classList.add('hidden');
   searchShow.classList.add('hidden');
-};
+}
 
 // List of event listeners
 searchEpisode.addEventListener('keydown', () => {
