@@ -24,6 +24,7 @@ let episodesList = [];
 let activePageButton = 1;
 let slideWidth = carousel.offsetWidth / 5.45;
 let slideIndex = 0;
+let episodePageActive = false;
 
 // Fetch all shows and display it
 async function fetchShows() {
@@ -49,7 +50,8 @@ async function fetchEpisodes (show) {
   try {
     const response = await fetch(show);
     episodesList = await response.json();
-    makePageForEpisodes(episodesList);
+    //makePageForEpisodes(episodesList);
+    renderPage(null, 9, episodesList)
     makeDropdownForEpisodes();
     console.log("Fetched")
   } catch (error) {
@@ -125,18 +127,34 @@ function makePageForEpisodes(episodeList) {
         </div>
     </div>`
   })
+  episodeList.length < 5? pageButton.classList.add('hidden') : pageButton.classList.remove('hidden');
   searchResult.textContent = `Displaying ${episodeList.length}/${episodesList.length} episodes`;
   showContainer.classList.add('hidden');
   episodeContainer.innerHTML = result;
 };
 
 // Pagination functionality
-function renderPage(list, pageSize) {
+function isEpisodePageActiveOrShowPage() {
+  if (episodePageActive) {
+    renderPage(null, 9, episodesList);
+    console.log('rendered episodes')
+  } else {
+    renderPage(selectionOfShows, 5, null);
+    console.log('rendered shows')
+  }
+};
+
+function renderPage(shows, pageSize, episodes) {
   const startIndex = (activePageButton - 1) * pageSize;
   const endIndex = activePageButton * pageSize;
-  const page = list.slice(startIndex, endIndex);
-  makePageForShows(page);
-}
+  if (shows !== null) {
+    const page = shows.slice(startIndex, endIndex);
+    makePageForShows(page);
+  } else if (episodes !== null) {
+    const page = episodes.slice(startIndex, endIndex);
+    makePageForEpisodes(page);
+  }
+};
 
 const renderActivePageBtn = () => {
   const pageBar = document.querySelectorAll('.page-link');
@@ -147,33 +165,32 @@ const renderActivePageBtn = () => {
       page.classList.add('active');
     }
   })
-}
+};
 
 function addNewPageBtn() {
   const numOfPages = pagesContainer.children.length;
-  activePageButton++;
-  renderPage(selectionOfShows, 5);
-  renderActivePageBtn();
-  if (activePageButton > numOfPages) {
-    if (numOfPages >= 5) {
-      const firstPageNum = activePageButton - 5;
-      const firstPage = pagesContainer.querySelector(`.page-item:nth-child(${firstPageNum})`);
-      for (let i = 1; i < firstPageNum; i++) {
-        const page = pagesContainer.querySelector(`.page-item:nth-child(${i})`);
-        page.style.display = 'none';
+    activePageButton++;
+    isEpisodePageActiveOrShowPage();
+    if (activePageButton > numOfPages) {
+      if (numOfPages >= 5) {
+        const firstPageNum = activePageButton - 5;
+        const firstPage = pagesContainer.querySelector(`.page-item:nth-child(${firstPageNum})`);
+        for (let i = 1; i < firstPageNum; i++) {
+          const page = pagesContainer.querySelector(`.page-item:nth-child(${i})`);
+          page.style.display = 'none';
+        }
+        firstPage.style.display = 'none';
       }
-      firstPage.style.display = 'none';
-    }
   pagesContainer.innerHTML += `<li class="page-item"><a class="page-link">${activePageButton}</a></li>`;
   }
   renderActivePageBtn();
-}
+};
 
 function moveBackPage() {
   const numOfPages = pagesContainer.children.length;
   if (activePageButton > 1) {
     activePageButton--;
-    renderPage(selectionOfShows, 5);
+    isEpisodePageActiveOrShowPage();
     renderActivePageBtn();
     if (numOfPages >= 6) {
       const firstPageNum = numOfPages - 5;
@@ -183,7 +200,7 @@ function moveBackPage() {
       firstPage.style.display = '';
     }
   }
-}
+};
 
 // Create dropdown for selected episodes
 function makeDropdownForEpisodes() {
@@ -232,7 +249,6 @@ function getSearchInputValue(searchInput) {
 // Display retrieved show/s
 function displayShow() {
   const searchShowValue = getSearchInputValue(searchShow);
-  console.log(searchShowValue)
   const filteredShows = selectionOfShows.filter(show => {
     return show.name.toLocaleLowerCase().includes(searchShowValue) ||
     show.summary.toLocaleLowerCase().includes(searchShowValue);
@@ -256,7 +272,7 @@ function expandSummary(spanId, span) {
     return show.id === spanId;
   })
   span.innerHTML = searchSummary.summary;  
-}
+};
 
 // Functionality for carousel
 function startCarousel() {
@@ -282,7 +298,7 @@ function getSelectedPoster(poster) {
      return show.image.medium.includes(poster);
   })
   makePageForShows(show);
-}
+};
 
 // Two functions to display or hide bars
 function displayShowsBar() {
@@ -292,14 +308,14 @@ function displayShowsBar() {
     searchShow.classList.remove('hidden');
     searchResult.textContent = '';
     searchEpisode.value = '';
-}
+};
 
 function displayEpisodeBar() {
   seriesDropdown.classList.remove("hidden");
   searchEpisode.classList.remove('hidden');
   showsDropdown.classList.add('hidden');
   searchShow.classList.add('hidden');
-}
+};
 
 // List of event listeners
 searchEpisode.addEventListener('keydown', () => {
@@ -328,6 +344,7 @@ seriesDropdown.addEventListener('change', (event) => {
 
 showContainer.addEventListener('click', (event) => {
   if (event.target.tagName === 'H1') {
+    episodePageActive = true;
     getEpisodesOfSelectedShow(event.target.textContent);
     displayEpisodeBar();
   }
@@ -335,7 +352,8 @@ showContainer.addEventListener('click', (event) => {
 
 buttonShow.addEventListener('click', () => {
   displayShowsBar();
-  renderPage(selectionOfShows, 5)
+  episodePageActive = false;
+  renderPage(selectionOfShows, 5, null);
 });
 
 document.addEventListener('click', (event) => {
@@ -350,17 +368,21 @@ document.addEventListener('click', (event) => {
 pageButton.addEventListener('click', (event) => {
   const pageNum = Number(event.target.textContent);
   const pageContent = event.target.textContent;
-  //activePageButton < selectionOfShows.length / 5
   if (!isNaN(pageNum)) {
     activePageButton = pageNum;
-    renderPage(selectionOfShows, 5);
-    renderActivePageBtn(pageContent);
+    isEpisodePageActiveOrShowPage();
+    renderActivePageBtn();
   } else if (pageContent === 'Next') {
-    addNewPageBtn();
+    // Check whether to add page button or not, based on location and arr.length
+    if (!episodePageActive && activePageButton < selectionOfShows.length / 5) {
+      addNewPageBtn();
+    } else if (episodePageActive && activePageButton < episodesList.length / 9) {
+      addNewPageBtn();
+    }
   } else if (pageContent === 'Previous') {
     moveBackPage();
   }
-})
+});
 
 prevBtn.addEventListener('click', () => {
   slideIndex--;
