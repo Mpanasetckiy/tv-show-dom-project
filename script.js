@@ -1,4 +1,7 @@
-//Get DOM elements
+/* eslint-disable no-console */
+/* eslint-disable no-use-before-define */
+/* eslint-disable no-plusplus */
+// Get DOM elements
 const episodeContainer = document.querySelector('#episode');
 const showContainer = document.querySelector('#showContainer');
 const searchShow = document.querySelector('#searchShow');
@@ -18,11 +21,11 @@ const nextBtn = document.querySelector('.next-btn');
 
 // Assign global variables
 const listOfShows = 'https://api.tvmaze.com/shows';
-let show = 'https://api.tvmaze.com/shows/82/episodes';
+const slideWidth = carousel.offsetWidth / 5.45;
+let currentShow = 'https://api.tvmaze.com/shows/82/episodes';
 let selectionOfShows = [];
 let episodesList = [];
 let activePageButton = 1;
-let slideWidth = carousel.offsetWidth / 5.45;
 let slideIndex = 0;
 let episodePageActive = false;
 
@@ -31,12 +34,10 @@ async function fetchShows() {
   try {
     const response = await fetch(listOfShows);
     selectionOfShows = await response.json();
-    selectionOfShows.sort((a, b) => {
-      return a.name.localeCompare(b.name);
-    })
+    selectionOfShows.sort((a, b) => a.name.localeCompare(b.name));
     makePageForShows(selectionOfShows);
     makeDropdownForShows(selectionOfShows);
-    console.log(selectionOfShows)
+    console.log(selectionOfShows);
   } catch (error) {
     console.error(error);
   }
@@ -45,44 +46,49 @@ async function fetchShows() {
 fetchShows();
 
 // Fetch episodes of the selected show
-async function fetchEpisodes (show) {
+async function fetchEpisodes(show) {
   try {
     const response = await fetch(show);
     episodesList = await response.json();
-    //makePageForEpisodes(episodesList);
-    renderPage(null, 9, episodesList)
+    renderPage(null, 9, episodesList);
     makeDropdownForEpisodes();
-    console.log("Fetched")
+    console.log('Fetched');
   } catch (error) {
     console.error(error);
   }
 }
 
 // Create dropdown for given shows
-function makeDropdownForShows(selectionOfShows) {
-  selectionOfShows.forEach(show => {
+function makeDropdownForShows(arrOfShows) {
+  arrOfShows.forEach((show) => {
     showsDropdown.innerHTML += `<option value="${show.name}">${show.name}</option>`;
-  })
+  });
 }
 
 // Transform season and episode numbers in correct format
 function getNumber(number) {
-  return number < 10? `0${number}` : number;
+  return number < 10 ? `0${number}` : number;
+}
+
+// Check whether to display pagination
+function whetherToShowPagination(showList) {
+  if (showList.length < 5) {
+    pageButton.classList.add('hidden');
+  } else {
+    pageButton.classList.remove('hidden');
+  }
 }
 
 // Main function to display all shows
 function makePageForShows(showList) {
-  let result = '';
-  const maxLength = 350;
+  const summaryLength = 350;
   const page = showList.slice(0, 5);
-  page.forEach(show => {
-    let summary = show.summary;
-    let truncatedSummary = show.summary.substring(0, maxLength).trim();
-    let btnReadMore = "hidden";
-    if (show.summary.length > maxLength) {
-      summary = truncatedSummary
-      btnReadMore = '';
-    }
+  let result = '';
+
+  page.forEach((show) => {
+    const truncatedSummary = show.summary.substring(0, summaryLength).trim();
+    const btnReadMoreClass = show.summary.length > summaryLength ? '' : 'hidden';
+    const summaryText = show.summary.length > summaryLength ? truncatedSummary : show.summary;
     result += `
     <div class="each__show">
      <h1>${show.name}</h1>
@@ -90,8 +96,8 @@ function makePageForShows(showList) {
         <div class="content__wrap">
           <img src="${show.image.medium}" alt="">
           <div>
-          <span class="${show.id}" id="summaryText">${summary}</span>
-          <span id="read-more-button" class="${btnReadMore}">...read more</span>
+          <span class="${show.id}" id="summaryText">${summaryText}</span>
+          <span id="read-more-button" class="${btnReadMoreClass}">...read more</span>
           </div>
         </div>
         <div class="props">
@@ -101,20 +107,20 @@ function makePageForShows(showList) {
           <p>Runtime: ${show.runtime}</p>
         </div>
       </div>
-    </div>` 
-  })
-  showList.length < 5? pageButton.classList.add('hidden'):pageButton.classList.remove('hidden'); // Check whether to show pagination
+    </div>`;
+  });
   showContainer.classList.remove('hidden');
   showContainer.innerHTML = result;
   episodeContainer.innerHTML = '';
+  whetherToShowPagination(showList);
 }
 
 // Main function to display all episodes
 function makePageForEpisodes(episodeList) {
   let result = '';
-  episodeList.forEach(episode => {
-    let episodeNum = getNumber(episode.number);
-    let episodeSeason = getNumber(episode.season);
+  episodeList.forEach((episode) => {
+    const episodeNum = getNumber(episode.number);
+    const episodeSeason = getNumber(episode.season);
     result += `
     <div class="episode__wrap">
         <div class="episode__header">
@@ -124,8 +130,8 @@ function makePageForEpisodes(episodeList) {
           <img src="${episode.image.medium}" alt="">
           ${episode.summary}
         </div>
-    </div>`
-  })
+    </div>`;
+  });
   searchResult.textContent = `Displaying ${episodeList.length}/${episodesList.length} episodes`;
   pageButton.classList.remove('hidden');
   showContainer.classList.add('hidden');
@@ -136,10 +142,8 @@ function makePageForEpisodes(episodeList) {
 function isEpisodePageActiveOrShowPage() {
   if (episodePageActive) {
     renderPage(null, 9, episodesList);
-    console.log('rendered episodes')
   } else {
     renderPage(selectionOfShows, 5, null);
-    console.log('rendered shows')
   }
 }
 
@@ -157,30 +161,30 @@ function renderPage(shows, pageSize, episodes) {
 
 const renderActivePageBtn = () => {
   const pageBar = document.querySelectorAll('.page-link');
-  pageBar.forEach(page => {
-    if (page.textContent != activePageButton) {
+  pageBar.forEach((page) => {
+    if (Number(page.textContent) !== activePageButton) {
       page.classList.remove('active');
-    } else if (page.textContent == activePageButton) {
+    } else if (Number(page.textContent) === activePageButton) {
       page.classList.add('active');
     }
-  })
+  });
 };
 
 function addNewPageBtn() {
   const numOfPages = pagesContainer.children.length;
-    activePageButton++;
-    isEpisodePageActiveOrShowPage();
-    if (activePageButton > numOfPages) {
-      if (numOfPages >= 5) {
-        const firstPageNum = activePageButton - 5;
-        const firstPage = pagesContainer.querySelector(`.page-item:nth-child(${firstPageNum})`);
-        for (let i = 1; i < firstPageNum; i++) {
-          const page = pagesContainer.querySelector(`.page-item:nth-child(${i})`);
-          page.style.display = 'none';
-        }
-        firstPage.style.display = 'none';
+  activePageButton++;
+  isEpisodePageActiveOrShowPage();
+  if (activePageButton > numOfPages) {
+    if (numOfPages >= 5) {
+      const firstPageNum = activePageButton - 5;
+      const firstPage = pagesContainer.querySelector(`.page-item:nth-child(${firstPageNum})`);
+      for (let i = 1; i < firstPageNum; i++) {
+        const page = pagesContainer.querySelector(`.page-item:nth-child(${i})`);
+        page.style.display = 'none';
       }
-  pagesContainer.innerHTML += `<li class="page-item"><a class="page-link">${activePageButton}</a></li>`;
+      firstPage.style.display = 'none';
+    }
+    pagesContainer.innerHTML += `<li class="page-item"><a class="page-link">${activePageButton}</a></li>`;
   }
   renderActivePageBtn();
 }
@@ -194,7 +198,7 @@ function moveBackPage() {
     if (numOfPages >= 6) {
       const firstPageNum = numOfPages - 5;
       const firstPage = pagesContainer.querySelector(`.page-item:nth-child(${firstPageNum})`);
-      const lastPage = pagesContainer.querySelector(`.page-item:nth-child(${numOfPages})`)
+      const lastPage = pagesContainer.querySelector(`.page-item:nth-child(${numOfPages})`);
       lastPage.remove();
       firstPage.style.display = '';
     }
@@ -203,74 +207,72 @@ function moveBackPage() {
 
 // Create dropdown for selected episodes
 function makeDropdownForEpisodes() {
-  let result =  '<option value="">Choose episode</option>';
-  episodesList.forEach(episode => {
-    let episodeNum = getNumber(episode.number);
-    let episodeSeason = getNumber(episode.season);
-     result += `<option value="${episode.name}">S${episodeSeason}E${episodeNum} - ${episode.name}</option>`;
-  })
+  let result = '<option value="">Choose episode</option>';
+  episodesList.forEach((episode) => {
+    const episodeNum = getNumber(episode.number);
+    const episodeSeason = getNumber(episode.season);
+    result += `<option value="${episode.name}">S${episodeSeason}E${episodeNum} - ${episode.name}</option>`;
+  });
   seriesDropdown.innerHTML = result;
 }
 
 // These 3 functions below get a/an show/episode and display it
 function getSelectedShow(showName) {
-  const selectedShow = selectionOfShows.filter(show => {
-    return show.name.includes(showName);
-  })
+  const selectedShow = selectionOfShows.filter((show) => show.name.includes(showName));
   makePageForShows(selectedShow);
 }
 
 function getEpisodesOfSelectedShow(selectedShow) {
-  const clickedShow = selectionOfShows.find(show => {
-    return show.name.includes(selectedShow);
-  }) 
-  const link = clickedShow._links.self.href;
-  show = `${link}/episodes`;
-  fetchEpisodes(show);
+  const clickedShow = selectionOfShows.find((show) => show.name.includes(selectedShow));
+  const { _links } = clickedShow;
+  const link = _links.self.href;
+  currentShow = `${link}/episodes`;
+  fetchEpisodes(currentShow);
   searchShow.value = '';
 }
 
 function getSelectedEpisode(selectedEpisode) {
-  const foundEpisode = episodesList.filter(episode => {
-    return episode.name.includes(selectedEpisode);
-  })
+  const foundEpisode = episodesList.filter((episode) => episode.name.includes(selectedEpisode));
   makePageForEpisodes(foundEpisode);
 }
 
 // Function below gets value and returns trimmed and lower cased string/value
 function getSearchInputValue(searchInput) {
   return searchInput.value
-  .trim()
-  .toLocaleLowerCase()
-  .replace(/[^a-zA-Z0-9]/g, ' '); 
+    .trim()
+    .toLocaleLowerCase()
+    .replace(/[^a-zA-Z0-9]/g, ' ');
 }
 
 // Display retrieved show/s
 function displayShow() {
   const searchShowValue = getSearchInputValue(searchShow);
-  const filteredShows = selectionOfShows.filter(show => {
-    return show.name.toLocaleLowerCase().includes(searchShowValue) ||
-    show.summary.toLocaleLowerCase().includes(searchShowValue);
-  })
+  const filteredShows = selectionOfShows.filter((show) => show.name
+    .toLocaleLowerCase()
+    .includes(searchShowValue)
+    || show.summary
+      .toLocaleLowerCase()
+      .includes(searchShowValue));
   makePageForShows(filteredShows);
 }
 
 // Display retrieved episode/s
 function displayEpisode() {
   const finderValue = getSearchInputValue(searchEpisode);
-  const filteredEpisodes = episodesList.filter(episode => {
-    return episode.name.toLocaleLowerCase().includes(finderValue) ||
-    episode.summary.toLocaleLowerCase().includes(finderValue);
-  })
+  const filteredEpisodes = episodesList.filter((episode) => episode.name
+    .toLocaleLowerCase()
+    .includes(finderValue)
+    || episode.summary
+      .toLocaleLowerCase()
+      .includes(finderValue));
   makePageForEpisodes(filteredEpisodes);
 }
 
 // Expand clicked summary
-function expandSummary(spanId, span) {
-  const searchSummary = selectionOfShows.find(show => {
-    return show.id === spanId;
-  })
-  span.innerHTML = searchSummary.summary;  
+function expandSummary(spanId, spanSummary) {
+  const summary = spanSummary;
+  const searchSummary = selectionOfShows.find((show) => show.id === spanId);
+  summary.innerHTML = searchSummary.summary;
 }
 
 // Functionality for carousel
@@ -289,28 +291,26 @@ function addCarouselPoster() {
   const poster = selectionOfShows[Math.floor(Math.random() * selectionOfShows.length)].image.medium;
   carouselContainer.innerHTML += `<img src="${poster}">`;
 }
- 
+
 startCarousel();
 
 function getSelectedPoster(poster) {
-  const show = selectionOfShows.filter(show => {
-     return show.image.medium.includes(poster);
-  })
-  makePageForShows(show);
+  const selectedShow = selectionOfShows.filter((show) => show.image.medium.includes(poster));
+  makePageForShows(selectedShow);
 }
 
 // Two functions to display or hide bars
 function displayShowsBar() {
-    searchEpisode.classList.add('hidden');
-    seriesDropdown.classList.add('hidden');
-    showsDropdown.classList.remove('hidden');
-    searchShow.classList.remove('hidden');
-    searchResult.textContent = '';
-    searchEpisode.value = '';
+  searchEpisode.classList.add('hidden');
+  seriesDropdown.classList.add('hidden');
+  showsDropdown.classList.remove('hidden');
+  searchShow.classList.remove('hidden');
+  searchResult.textContent = '';
+  searchEpisode.value = '';
 }
 
 function displayEpisodeBar() {
-  seriesDropdown.classList.remove("hidden");
+  seriesDropdown.classList.remove('hidden');
   searchEpisode.classList.remove('hidden');
   showsDropdown.classList.add('hidden');
   searchShow.classList.add('hidden');
@@ -318,7 +318,7 @@ function displayEpisodeBar() {
 
 // List of event listeners
 searchEpisode.addEventListener('keydown', () => {
- displayEpisode();
+  displayEpisode();
 });
 
 searchShow.addEventListener('keydown', () => {
@@ -329,13 +329,13 @@ showsDropdown.addEventListener('change', (event) => {
   if (event.target.value !== '') {
     getSelectedShow(event.target.value);
   } else {
-    makePageForShows(selectionOfShows)
+    makePageForShows(selectionOfShows);
   }
 });
 
 seriesDropdown.addEventListener('change', (event) => {
   if (event.target.value !== '') {
-    getSelectedEpisode(event.target.value)
+    getSelectedEpisode(event.target.value);
   } else {
     makePageForEpisodes(episodesList);
   }
@@ -356,18 +356,18 @@ buttonShow.addEventListener('click', () => {
 });
 
 document.addEventListener('click', (event) => {
-  if (event.target.tagName === "SPAN") {
-  const spanSummary = event.target.parentNode.parentNode;
-  const spanId = Number(event.target.parentNode.parentNode.className);
-  event.target.classList.add('hidden');
-  expandSummary(spanId, spanSummary);
-  } 
+  if (event.target.tagName === 'SPAN') {
+    const spanSummary = event.target.parentNode.parentNode;
+    const spanId = Number(event.target.parentNode.parentNode.className);
+    event.target.classList.add('hidden');
+    expandSummary(spanId, spanSummary);
+  }
 });
 
 pageButton.addEventListener('click', (event) => {
   const pageNum = Number(event.target.textContent);
   const pageContent = event.target.textContent;
-  if (!isNaN(pageNum)) {
+  if (!Number.isNaN(pageNum)) {
     activePageButton = pageNum;
     isEpisodePageActiveOrShowPage();
     renderActivePageBtn();
