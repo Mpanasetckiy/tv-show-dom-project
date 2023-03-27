@@ -135,7 +135,7 @@ function makePageForEpisodes(episodeList) {
     return acc + episode;
   }, '');
   searchResult.textContent = `Displaying ${episodeList.length}/${episodesList.length} episodes`;
-  pageButton.classList.remove('hidden');
+  // pageButton.classList.remove('hidden');
   showContainer.classList.add('hidden');
   episodeContainer.innerHTML = result;
 }
@@ -235,6 +235,7 @@ function getEpisodesOfSelectedShow(selectedShow) {
 
 function getSelectedEpisode(selectedEpisode) {
   const foundEpisode = episodesList.filter(({ name }) => name.includes(selectedEpisode));
+  pageButton.classList.add('hidden');
   makePageForEpisodes(foundEpisode);
 }
 
@@ -255,7 +256,7 @@ function displayShow() {
     || summary
       .toLocaleLowerCase()
       .includes(searchShowValue));
-  makePageForShows(filteredShows);
+  renderPage(filteredShows, 5, null);
 }
 
 // Display retrieved episode/s
@@ -267,7 +268,7 @@ function displayEpisode() {
     || summary
       .toLocaleLowerCase()
       .includes(finderValue));
-  makePageForEpisodes(filteredEpisodes);
+  renderPage(null, 9, filteredEpisodes);
 }
 
 // Expand clicked summary
@@ -339,13 +340,15 @@ seriesDropdown.addEventListener('change', (event) => {
   if (event.target.value !== '') {
     getSelectedEpisode(event.target.value);
   } else {
-    makePageForEpisodes(episodesList);
+    renderPage(null, 9, episodesList);
+    pageButton.classList.remove('hidden');
   }
 });
 
 showContainer.addEventListener('click', (event) => {
   if (event.target.tagName === 'H1') {
     episodePageActive = true;
+    pageButton.classList.remove('hidden');
     getEpisodesOfSelectedShow(event.target.textContent);
     displayEpisodeBar();
   }
