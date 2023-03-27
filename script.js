@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 /* eslint-disable no-use-before-define */
 /* eslint-disable no-plusplus */
+
 // Get DOM elements
 const episodeContainer = document.querySelector('#episode');
 const showContainer = document.querySelector('#showContainer');
@@ -12,6 +13,7 @@ const seriesDropdown = document.querySelector('#series');
 const buttonShow = document.querySelector('#displayShow');
 const pageButton = document.querySelector('.pagination');
 const pagesContainer = document.querySelector('.pagination__pages');
+const seasonContainer = document.querySelector('#seasonContainer');
 
 // DOM elements for carousel
 const carousel = document.querySelector('.carousel');
@@ -23,13 +25,17 @@ const nextBtn = document.querySelector('.next-btn');
 const listOfShows = 'https://api.tvmaze.com/shows';
 const slideWidth = carousel.offsetWidth / 5.45;
 let currentShow = 'https://api.tvmaze.com/shows/82/episodes';
+let currentSeason = 'https://api.tvmaze.com/shows/82/seasons';
 let selectionOfShows = [];
+let seasonList = [];
 let episodesList = [];
 let activePageButton = 1;
 let slideIndex = 0;
 let episodePageActive = false;
 
-// Fetch all shows and display it
+fetchShows();
+
+// Fetch all shows/seasons/episodes and display them
 async function fetchShows() {
   try {
     const response = await fetch(listOfShows);
@@ -43,16 +49,25 @@ async function fetchShows() {
   }
 }
 
-fetchShows();
+// Fetch season of the selected show
+async function fetchSeason() {
+  try {
+    const response = await fetch(currentSeason);
+    seasonList = await response.json();
+    console.log(seasonList);
+    makePageForSeasons(seasonList);
+  } catch (error) {
+    console.error(error);
+  }
+}
 
 // Fetch episodes of the selected show
-async function fetchEpisodes(show) {
+async function fetchEpisodes() {
   try {
-    const response = await fetch(show);
+    const response = await fetch(currentShow);
     episodesList = await response.json();
-    renderPage(null, 9, episodesList);
     makeDropdownForEpisodes();
-    console.log('Fetched');
+    console.log('Episodes fetched');
   } catch (error) {
     console.error(error);
   }
@@ -114,6 +129,25 @@ function makePageForShows(showList) {
   episodeContainer.innerHTML = '';
   whetherToShowPagination(showList);
 }
+
+// Main function to display all seasons
+const makePageForSeasons = (seasonArr) => {
+  const result = seasonArr.reduce((acc, { number, image: { medium }, summary }) => {
+    const isNull = summary === null ? '' : summary;
+    const season = `
+    <div class="episode__wrap">
+          <div class="episode__header">
+            <h2 id="${number}">Season ${number}</h2>
+          </div>
+          <div class="episode__info">
+            <img src="${medium}" alt="">
+            ${isNull}
+          </div>
+      </div>`;
+    return acc + season;
+  }, '');
+  seasonContainer.innerHTML = result;
+};
 
 // Main function to display all episodes
 function makePageForEpisodes(episodeList) {
@@ -218,20 +252,27 @@ function makeDropdownForEpisodes() {
   seriesDropdown.innerHTML = result;
 }
 
-// These 3 functions below get a/an show/episode and display it
+// These 4 functions below get show/season/episode and display it
 function getSelectedShow(showName) {
   const selectedShow = selectionOfShows.filter(({ name }) => name.includes(showName));
   makePageForShows(selectedShow);
 }
 
-function getEpisodesOfSelectedShow(selectedShow) {
+function getSeasonsOfSelectedShow(selectedShow) {
   const clickedShow = selectionOfShows.find(({ name }) => name.includes(selectedShow));
   const { _links } = clickedShow;
   const link = _links.self.href;
   currentShow = `${link}/episodes`;
-  fetchEpisodes(currentShow);
+  currentSeason = `${link}/seasons`;
+  fetchSeason(currentSeason);
   searchShow.value = '';
 }
+
+const getEpisodesOfSelectedSeason = (selectedSeason) => {
+  const seasonNum = Number(selectedSeason);
+  const numOfEpisodes = episodesList.filter(({ season }) => season === seasonNum);
+  makePageForEpisodes(numOfEpisodes);
+};
 
 function getSelectedEpisode(selectedEpisode) {
   const foundEpisode = episodesList.filter(({ name }) => name.includes(selectedEpisode));
@@ -347,9 +388,18 @@ seriesDropdown.addEventListener('change', (event) => {
 
 showContainer.addEventListener('click', (event) => {
   if (event.target.tagName === 'H1') {
+    getSeasonsOfSelectedShow(event.target.textContent);
+    showContainer.classList.add('hidden');
+    fetchEpisodes();
+  }
+});
+
+seasonContainer.addEventListener('click', (event) => {
+  if (event.target.tagName === 'H2') {
     episodePageActive = true;
     pageButton.classList.remove('hidden');
-    getEpisodesOfSelectedShow(event.target.textContent);
+    seasonContainer.classList.add('hidden');
+    getEpisodesOfSelectedSeason(event.target.id);
     displayEpisodeBar();
   }
 });

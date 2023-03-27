@@ -73,12 +73,16 @@ select {
   text-align: center;
 }
  
-h1 {
+h1  {
   cursor: pointer;
   width: fit-content;
 }
 
-h1:hover {
+h2 {
+  cursor: pointer;
+}
+
+h1:hover, h2:hover {
   color: var(--color-red) ;
 }
 
