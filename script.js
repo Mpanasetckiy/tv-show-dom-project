@@ -389,6 +389,7 @@ seriesDropdown.addEventListener('change', (event) => {
 showContainer.addEventListener('click', (event) => {
   if (event.target.tagName === 'H1') {
     getSeasonsOfSelectedShow(event.target.textContent);
+    pageButton.classList.add('hidden');
     showContainer.classList.add('hidden');
     fetchEpisodes();
   }
@@ -397,7 +398,6 @@ showContainer.addEventListener('click', (event) => {
 seasonContainer.addEventListener('click', (event) => {
   if (event.target.tagName === 'H2') {
     episodePageActive = true;
-    pageButton.classList.remove('hidden');
     seasonContainer.classList.add('hidden');
     getEpisodesOfSelectedSeason(event.target.id);
     displayEpisodeBar();
@@ -405,8 +405,12 @@ seasonContainer.addEventListener('click', (event) => {
 });
 
 buttonShow.addEventListener('click', () => {
-  displayShowsBar();
+  seasonContainer.classList.remove('hidden');
+  seasonContainer.innerHTML = '';
   episodePageActive = false;
+  activePageButton = 1;
+  displayShowsBar();
+  renderActivePageBtn();
   renderPage(selectionOfShows, 5, null);
 });
 
@@ -457,6 +461,9 @@ nextBtn.addEventListener('click', () => {
 
 carouselContainer.addEventListener('click', (event) => {
   if (event.target.tagName === 'IMG') {
+    seasonContainer.innerHTML = '';
+    seasonContainer.classList.remove('hidden');
+    activePageButton = 1;
     displayShowsBar();
     getSelectedPoster(event.target.getAttribute('src'));
   }
