@@ -147,6 +147,9 @@ img {
 .pagination__pages {
   display: flex;
 }
+.page-link:hover {
+  opacity: 0.9;
+}
 
 .carousel {
   margin: 2rem;

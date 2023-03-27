@@ -117,21 +117,23 @@ function makePageForShows(showList) {
 
 // Main function to display all episodes
 function makePageForEpisodes(episodeList) {
-  let result = '';
-  episodeList.forEach((episode) => {
-    const episodeNum = getNumber(episode.number);
-    const episodeSeason = getNumber(episode.season);
-    result += `
-    <div class="episode__wrap">
-        <div class="episode__header">
-          <h3>${episode.name} - S${episodeSeason}E${episodeNum}</h3>
-        </div>
-        <div class="episode__info">
-          <img src="${episode.image.medium}" alt="">
-          ${episode.summary}
-        </div>
-    </div>`;
-  });
+  const result = episodeList.reduce((acc, {
+    name, number, season, summary, image: { medium },
+  }) => {
+    const episodeNum = getNumber(number);
+    const episodeSeason = getNumber(season);
+    const episode = `
+      <div class="episode__wrap">
+          <div class="episode__header">
+            <h3>${name} - S${episodeSeason}E${episodeNum}</h3>
+          </div>
+          <div class="episode__info">
+            <img src="${medium}" alt="">
+            ${summary}
+          </div>
+      </div>`;
+    return acc + episode;
+  }, '');
   searchResult.textContent = `Displaying ${episodeList.length}/${episodesList.length} episodes`;
   pageButton.classList.remove('hidden');
   showContainer.classList.add('hidden');
@@ -208,22 +210,22 @@ function moveBackPage() {
 // Create dropdown for selected episodes
 function makeDropdownForEpisodes() {
   let result = '<option value="">Choose episode</option>';
-  episodesList.forEach((episode) => {
-    const episodeNum = getNumber(episode.number);
-    const episodeSeason = getNumber(episode.season);
-    result += `<option value="${episode.name}">S${episodeSeason}E${episodeNum} - ${episode.name}</option>`;
+  episodesList.forEach(({ name, number, season }) => {
+    const episodeNum = getNumber(number);
+    const episodeSeason = getNumber(season);
+    result += `<option value="${name}">S${episodeSeason}E${episodeNum} - ${name}</option>`;
   });
   seriesDropdown.innerHTML = result;
 }
 
 // These 3 functions below get a/an show/episode and display it
 function getSelectedShow(showName) {
-  const selectedShow = selectionOfShows.filter((show) => show.name.includes(showName));
+  const selectedShow = selectionOfShows.filter(({ name }) => name.includes(showName));
   makePageForShows(selectedShow);
 }
 
 function getEpisodesOfSelectedShow(selectedShow) {
-  const clickedShow = selectionOfShows.find((show) => show.name.includes(selectedShow));
+  const clickedShow = selectionOfShows.find(({ name }) => name.includes(selectedShow));
   const { _links } = clickedShow;
   const link = _links.self.href;
   currentShow = `${link}/episodes`;
@@ -232,7 +234,7 @@ function getEpisodesOfSelectedShow(selectedShow) {
 }
 
 function getSelectedEpisode(selectedEpisode) {
-  const foundEpisode = episodesList.filter((episode) => episode.name.includes(selectedEpisode));
+  const foundEpisode = episodesList.filter(({ name }) => name.includes(selectedEpisode));
   makePageForEpisodes(foundEpisode);
 }
 
@@ -247,10 +249,10 @@ function getSearchInputValue(searchInput) {
 // Display retrieved show/s
 function displayShow() {
   const searchShowValue = getSearchInputValue(searchShow);
-  const filteredShows = selectionOfShows.filter((show) => show.name
+  const filteredShows = selectionOfShows.filter(({ name, summary }) => name
     .toLocaleLowerCase()
     .includes(searchShowValue)
-    || show.summary
+    || summary
       .toLocaleLowerCase()
       .includes(searchShowValue));
   makePageForShows(filteredShows);
@@ -259,10 +261,10 @@ function displayShow() {
 // Display retrieved episode/s
 function displayEpisode() {
   const finderValue = getSearchInputValue(searchEpisode);
-  const filteredEpisodes = episodesList.filter((episode) => episode.name
+  const filteredEpisodes = episodesList.filter(({ name, summary }) => name
     .toLocaleLowerCase()
     .includes(finderValue)
-    || episode.summary
+    || summary
       .toLocaleLowerCase()
       .includes(finderValue));
   makePageForEpisodes(filteredEpisodes);
@@ -271,7 +273,7 @@ function displayEpisode() {
 // Expand clicked summary
 function expandSummary(spanId, spanSummary) {
   const summary = spanSummary;
-  const searchSummary = selectionOfShows.find((show) => show.id === spanId);
+  const searchSummary = selectionOfShows.find(({ id }) => id === spanId);
   summary.innerHTML = searchSummary.summary;
 }
 
@@ -295,7 +297,7 @@ function addCarouselPoster() {
 startCarousel();
 
 function getSelectedPoster(poster) {
-  const selectedShow = selectionOfShows.filter((show) => show.image.medium.includes(poster));
+  const selectedShow = selectionOfShows.filter(({ image: { medium } }) => medium.includes(poster));
   makePageForShows(selectedShow);
 }
 
