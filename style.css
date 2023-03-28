@@ -1,9 +1,7 @@
 :root {
   --color-red: #E21818;
 }
-#root {
-  color: #E21818
-}
+
 body {
   max-width: 1600px;
   width: 100%;
@@ -62,23 +60,36 @@ select {
 }
 
 .episode__info {
-  margin-top: 2rem;
+  margin-top: 1rem;
   width: 250px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-.episode__header{
-  border: 1.5px solid black;
-  width: 296px;
-  border-radius: 15px;
-  text-align: center;
+.episode__info p {
+  margin-top: 1rem;
 }
- 
+
+.episode__info img:hover {
+  opacity: 0.7;
+  transition: opacity 0.5s ease-in-out;
+}
+
+img {
+  height: fit-content;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
 h1  {
   cursor: pointer;
+  transition: all 0.3s ease-in-out;
   width: fit-content;
 }
 
 h2 {
+  transition: all 0.3s ease-in-out;
   cursor: pointer;
 }
 
@@ -135,9 +146,7 @@ h1:hover, h2:hover {
   column-gap: 1rem;
 }
 
-img {
-  height: fit-content;
-}
+
 
 .hidden {
   display: none;
@@ -179,7 +188,7 @@ img {
   width: 200px;
   height: auto;
   margin: 0 10px;
-  border-radius: 15px;
+  
 }
 
 .carousel-container img:hover {

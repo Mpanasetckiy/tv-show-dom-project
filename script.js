@@ -140,15 +140,13 @@ const makePageForSeasons = (seasonArr) => {
   const result = seasonArr.reduce((acc, { number, image: { medium }, summary }) => {
     const isNull = summary === null ? '' : summary;
     const season = `
-    <div class="episode__wrap">
-          <div class="episode__header">
-            <h2 id="${number}">Season ${number}</h2>
-          </div>
-          <div class="episode__info">
-            <img src="${medium}" alt="">
-            ${isNull}
-          </div>
-      </div>`;
+        <div class="episode__wrap">
+            <div class="episode__info">
+              <h2 id="${number}">Season ${number}</h2>
+              <img id="${number}" src="${medium}" alt="">
+              ${isNull}
+            </div>
+        </div>`;
     return acc + season;
   }, '');
   seasonContainer.innerHTML = result;
@@ -406,7 +404,8 @@ showContainer.addEventListener('click', (event) => {
 });
 
 seasonContainer.addEventListener('click', (event) => {
-  if (event.target.tagName === 'H2') {
+  if (event.target.tagName === 'H2'
+  || event.target.tagName === 'IMG') {
     episodePageActive = true;
     seasonContainer.classList.add('hidden');
     getEpisodesOfSelectedSeason(event.target.id);
