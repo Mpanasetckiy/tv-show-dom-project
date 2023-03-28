@@ -94,14 +94,14 @@ h1:hover, h2:hover {
 #read-more-button:hover {
   color: var(--color-red)
 }
+
 .props {
   border: 1px solid grey;
   width: 70%;
   height: 70%;
-  padding-left: 2rem;
-  display: flex;
-  flex-direction: column;
+  padding: 1rem;
 }
+
 .pagination .page-link.active {
   background-color: var(--color-red);
   color: #fff;
@@ -111,19 +111,19 @@ h1:hover, h2:hover {
   color: #000; 
   border: unset;
 }
+
 .show__container {
   width: 90%;
   margin: 0 auto;
-  
-
   display: flex;
-    flex-direction: column;
-    row-gap: 2rem;
+  flex-direction: column;
+  row-gap: 2rem;
 }
+
 .each__show {
-  
-    padding: 2rem
+  padding: 2rem
 }
+
 .show__wrap {
   display: grid;
   grid-template-columns: 70% 30%;
@@ -145,16 +145,18 @@ img {
 
 .navbar {
   display: flex;
-    justify-content: center;
+  justify-content: center;
 }
 
 .pagination__pages {
   display: flex;
 }
+
 .page-link:hover {
   opacity: 0.9;
 }
 
+/* Carousel style */
 .carousel {
   margin: 2rem;
   position: relative;
@@ -163,25 +165,27 @@ img {
   height: 300px;
   overflow: hidden;
 }
+
 .carousel-container {
   display: flex;
   flex-wrap: nowrap;
   width: fit-content;
   transition: transform 0.5s ease-in-out;
-  /* margin: 0 auto; */
   margin-left: 4rem;
   max-width: 1100px;
 }
+
 .carousel-container img {
   width: 200px;
   height: auto;
   margin: 0 10px;
-  cursor: pointer;
   border-radius: 15px;
 }
+
 .carousel-container img:hover {
-border: #E21818 1px solid;
 opacity: 0.7;
+transition: opacity 0.5s ease-in-out;
+cursor: pointer;
 } 
 
 .prev-btn,
@@ -196,6 +200,7 @@ opacity: 0.7;
   line-height: 1;
   padding: 10px;
 }
+
 .prev-btn:hover,
 .next-btn:hover {
   color: #E21818;
@@ -207,6 +212,50 @@ opacity: 0.7;
 .next-btn {
   right: 0;
 }
+
+ /* Play button animation */
+ .image__container {
+  position: relative;
+  display: block;
+  transition: all 0.5s ease-in-out;
+  cursor: pointer;
+}
+
+.image__container:hover {
+  opacity: 0.8;
+  transition: all 0.5s ease-in-out;
+}
+
+.play-circle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  width: 70px;
+  height: 70px;
+  cursor: pointer;
+  transition: all 0.5s ease-in-out;
+}
+
+.play-circle:hover {
+  color: #E21818;
+}
+
+.play-circle i {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.image__container:hover .play-circle {
+  opacity: 1;
+}
+/* ======================== */
 
 .footer {
   display: flex;
@@ -237,3 +286,4 @@ a {
   color: #E21818;
   
 }
+

@@ -109,7 +109,12 @@ function makePageForShows(showList) {
      <h1>${show.name}</h1>
       <div class="show__wrap">
         <div class="content__wrap">
-          <img src="${show.image.medium}" alt="">
+        <div class="image__container">
+        <img src="${show.image.medium}" alt="">
+        <div class="play-circle" id="${show.name}">
+            <i class="fas fa-play"></i>
+          </div>
+        </div>
           <div>
           <span class="${show.id}" id="summaryText">${summaryText}</span>
           <span id="read-more-button" class="${btnReadMoreClass}">...read more</span>
@@ -254,12 +259,12 @@ function makeDropdownForEpisodes() {
 
 // These 4 functions below get show/season/episode and display it
 function getSelectedShow(showName) {
-  const selectedShow = selectionOfShows.filter(({ name }) => name.includes(showName));
+  const selectedShow = selectionOfShows.filter(({ name }) => name === showName);
   makePageForShows(selectedShow);
 }
 
 function getSeasonsOfSelectedShow(selectedShow) {
-  const clickedShow = selectionOfShows.find(({ name }) => name.includes(selectedShow));
+  const clickedShow = selectionOfShows.find(({ name }) => name === selectedShow);
   const { _links } = clickedShow;
   const link = _links.self.href;
   currentShow = `${link}/episodes`;
@@ -392,6 +397,11 @@ showContainer.addEventListener('click', (event) => {
     pageButton.classList.add('hidden');
     showContainer.classList.add('hidden');
     fetchEpisodes();
+  } else if (event.target.className === 'play-circle') {
+    getSeasonsOfSelectedShow(event.target.id);
+    pageButton.classList.add('hidden');
+    showContainer.classList.add('hidden');
+    fetchEpisodes();
   }
 });
 
@@ -407,6 +417,7 @@ seasonContainer.addEventListener('click', (event) => {
 buttonShow.addEventListener('click', () => {
   seasonContainer.classList.remove('hidden');
   seasonContainer.innerHTML = '';
+  searchShow.value = '';
   episodePageActive = false;
   activePageButton = 1;
   displayShowsBar();
