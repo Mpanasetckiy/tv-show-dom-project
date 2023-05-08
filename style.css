@@ -1,6 +1,6 @@
 :root {
-  --color-red: #E21818;
-  --paper: #FFFFFA;
+  --color-red: #e21818;
+  --paper: #fffffa;
 }
 
 body {
@@ -10,7 +10,7 @@ body {
   color: #fff;
   background-color: #000;
   box-sizing: border-box;
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
 }
 
 section {
@@ -38,7 +38,7 @@ input::placeholder {
 
 select {
   height: 40px;
-  background: transparent;
+  background: #000;
   color: #fff;
   border-radius: 5px;
 }
@@ -83,7 +83,7 @@ img {
   cursor: pointer;
 }
 
-h1  {
+h1 {
   cursor: pointer;
   transition: all 0.3s ease-in-out;
   width: fit-content;
@@ -94,8 +94,9 @@ h2 {
   cursor: pointer;
 }
 
-h1:hover, h2:hover {
-  color: var(--color-red) ;
+h1:hover,
+h2:hover {
+  color: var(--color-red);
 }
 
 #read-more-button {
@@ -104,7 +105,7 @@ h1:hover, h2:hover {
 }
 
 #read-more-button:hover {
-  color: var(--color-red)
+  color: var(--color-red);
 }
 
 .props {
@@ -120,7 +121,7 @@ h1:hover, h2:hover {
 }
 
 .pagination .page-link {
-  color: #000; 
+  color: #000;
   border: unset;
 }
 
@@ -133,7 +134,7 @@ h1:hover, h2:hover {
 }
 
 .each__show {
-  padding: 2rem
+  padding: 2rem;
 }
 
 .show__wrap {
@@ -142,12 +143,10 @@ h1:hover, h2:hover {
   column-gap: 4rem;
 }
 
-.content__wrap{
+.content__wrap {
   display: flex;
   column-gap: 1rem;
 }
-
-
 
 .hidden {
   display: none;
@@ -189,14 +188,13 @@ h1:hover, h2:hover {
   width: 200px;
   height: auto;
   margin: 0 10px;
-  
 }
 
 .carousel-container img:hover {
-opacity: 0.7;
-transition: opacity 0.5s ease-in-out;
-cursor: pointer;
-} 
+  opacity: 0.7;
+  transition: opacity 0.5s ease-in-out;
+  cursor: pointer;
+}
 
 .prev-btn,
 .next-btn {
@@ -213,7 +211,7 @@ cursor: pointer;
 
 .prev-btn:hover,
 .next-btn:hover {
-  color: #E21818;
+  color: #e21818;
 }
 
 .prev-btn {
@@ -223,8 +221,8 @@ cursor: pointer;
   right: 0;
 }
 
- /* Play button animation */
- .image__container {
+/* Play button animation */
+.image__container {
   position: relative;
   display: block;
   transition: all 0.5s ease-in-out;
@@ -252,7 +250,7 @@ cursor: pointer;
 }
 
 .play-circle:hover {
-  color: #E21818;
+  color: #e21818;
 }
 
 .play-circle i {
@@ -306,7 +304,5 @@ a {
   text-decoration: none;
 }
 .github:hover {
-  color: #E21818;
-  
+  color: #e21818;
 }
-
