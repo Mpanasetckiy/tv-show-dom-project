@@ -5,19 +5,36 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>TV Show Project | Maksim Lukianenko</title>
     <link rel="icon" href="/favicon.ico" type="image/x-icon" />
-    <link href="//fonts.googleapis.com/css?family=Roboto:400,500,300" rel="stylesheet" type="text/css"/>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+    <link
+      href="//fonts.googleapis.com/css?family=Roboto:400,500,300"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
+    />
     <link href="style.css" rel="stylesheet" />
   </head>
   <body>
     <header>
       <div class="carousel">
         <div class="carousel-container">
-          <img src="https://static.tvmaze.com/uploads/images/medium_portrait/445/1114021.jpg">
-          <img src="https://static.tvmaze.com/uploads/images/medium_portrait/160/401855.jpg">
-          <img src="https://static.tvmaze.com/uploads/images/medium_portrait/213/534017.jpg">
-          <img src="https://static.tvmaze.com/uploads/images/medium_portrait/286/715906.jpg">
-          <img src="https://static.tvmaze.com/uploads/images/medium_portrait/190/476117.jpg">
+          <img
+            src="https://static.tvmaze.com/uploads/images/medium_portrait/445/1114021.jpg"
+          />
+          <img
+            src="https://static.tvmaze.com/uploads/images/medium_portrait/160/401855.jpg"
+          />
+          <img
+            src="https://static.tvmaze.com/uploads/images/medium_portrait/213/534017.jpg"
+          />
+          <img
+            src="https://static.tvmaze.com/uploads/images/medium_portrait/286/715906.jpg"
+          />
+          <img
+            src="https://static.tvmaze.com/uploads/images/medium_portrait/190/476117.jpg"
+          />
         </div>
         <button class="prev-btn">&#60;</button>
         <button class="next-btn">&#62;</button>
@@ -28,12 +45,18 @@
         <select name="show" id="shows">
           <option value="">Choose show</option>
         </select>
-        <select name="episode" id="series" class="hidden">
-        </select>
-        <input id="searchShow" placeholder="Search show" type="text">
-        <input id="searchEpisode" class="hidden" placeholder="Search episode" type="text">
+        <select name="episode" id="series" class="hidden"></select>
+        <input id="searchShow" placeholder="Search show" type="text" />
+        <input
+          id="searchEpisode"
+          class="hidden"
+          placeholder="Search episode"
+          type="text"
+        />
         <p id="output"></p>
-        <button type="button" id="displayShow" class="btn btn-danger">TV Shows</button>
+        <button type="button" id="displayShow" class="btn btn-danger">
+          TV Shows
+        </button>
       </div>
     </section>
     <div id="showContainer" class="show__container"></div>
@@ -52,17 +75,26 @@
     </nav>
     <footer>
       <div class="footer" id="contact">
-          <p>Join us now</p>
-          <div>
-            <span>© by </span>
-            <a href="https://github.com/Mpanasetckiy" class="github">Maksim Lukianenko</a>
-          </div>
+        <p>Join us now</p>
         <div>
-          <a href="https://codeyourfuture.io/"><img class="footer__img" src="/cyf_brand.png" alt="CYF"></a>
+          <span>© by </span>
+          <a href="https://github.com/Mpanasetckiy" class="github"
+            >Maksim Lukianenko</a
+          >
+        </div>
+        <div>
+          <a href="https://codeyourfuture.io/">
+            <div class="footer__img">
+              <img src="/cyf_brand.png" alt="CYF" />
+            </div>
+          </a>
         </div>
       </div>
-  </footer>
+    </footer>
     <script src="script.js"></script>
-    <script src="https://kit.fontawesome.com/8f5cda468f.js" crossorigin="anonymous"></script>
+    <script
+      src="https://kit.fontawesome.com/8f5cda468f.js"
+      crossorigin="anonymous"
+    ></script>
   </body>
 </html>
