@@ -25,6 +25,7 @@ const nextBtn = document.querySelector(".next-btn");
 // Assign global variables
 const listOfShows = "https://api.tvmaze.com/shows";
 const slideWidth = carousel.offsetWidth / 5.45;
+const addedPosters = []; // Array to track added posters
 let currentShow = "https://api.tvmaze.com/shows/82/episodes";
 let currentSeason = "https://api.tvmaze.com/shows/82/seasons";
 let selectionOfShows = [];
@@ -361,10 +362,15 @@ function startCarousel() {
 }
 
 function addCarouselPoster() {
-  const poster =
-    selectionOfShows[Math.floor(Math.random() * selectionOfShows.length)].image
-      .medium;
+  const randomShow =
+    selectionOfShows[Math.floor(Math.random() * selectionOfShows.length)];
+  const poster = randomShow.image.medium;
+  if (addedPosters.includes(poster)) {
+    addCarouselPoster();
+    return;
+  }
   carouselContainer.innerHTML += `<img src="${poster}">`;
+  addedPosters.push(poster);
 }
 
 startCarousel();
