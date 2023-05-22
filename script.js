@@ -73,8 +73,8 @@ async function fetchEpisodes() {
 // Create dropdown for given shows
 function makeDropdownForShows() {
   const sortedShows = selectionOfShows
-    .sort((a, b) => a.name.localeCompare(b.name))
-    .slice();
+    .slice()
+    .sort((a, b) => a.name.localeCompare(b.name));
   sortedShows.forEach((show) => {
     showsDropdown.innerHTML += `<option value="${show.name}">${show.name}</option>`;
   });
