@@ -34,17 +34,15 @@ let activePageButton = 1;
 let slideIndex = 0;
 let episodePageActive = false;
 
-fetchShows();
+window.onload = fetchShows();
 
 // Fetch all shows/seasons/episodes and display them
 async function fetchShows() {
   try {
     const response = await fetch(listOfShows);
     selectionOfShows = await response.json();
-    selectionOfShows.sort((a, b) => a.name.localeCompare(b.name));
     makePageForShows(selectionOfShows);
-    makeDropdownForShows(selectionOfShows);
-    console.log(selectionOfShows);
+    makeDropdownForShows();
   } catch (error) {
     console.error(error);
   }
@@ -73,8 +71,11 @@ async function fetchEpisodes() {
 }
 
 // Create dropdown for given shows
-function makeDropdownForShows(arrOfShows) {
-  arrOfShows.forEach((show) => {
+function makeDropdownForShows() {
+  const sortedShows = selectionOfShows
+    .sort((a, b) => a.name.localeCompare(b.name))
+    .slice();
+  sortedShows.forEach((show) => {
     showsDropdown.innerHTML += `<option value="${show.name}">${show.name}</option>`;
   });
 }
