@@ -99,37 +99,47 @@ function makePageForShows(showList) {
   const page = showList.slice(0, 5);
   let result = "";
 
-  page.forEach((show) => {
-    const truncatedSummary = show.summary.substring(0, summaryLength).trim();
-    const btnReadMoreClass =
-      show.summary.length > summaryLength ? "" : "hidden";
-    const summaryText =
-      show.summary.length > summaryLength ? truncatedSummary : show.summary;
-    result += `
+  page.forEach(
+    ({
+      name,
+      id,
+      image: { medium },
+      rating: { average },
+      genres,
+      status,
+      runtime,
+      summary,
+    }) => {
+      const truncatedSummary = summary.substring(0, summaryLength).trim();
+      const btnReadMoreClass = summary.length > summaryLength ? "" : "hidden";
+      const summaryText =
+        summary.length > summaryLength ? truncatedSummary : summary;
+      result += `
     <div class="each__show">
-     <h1 id="${show.id}">${show.name}</h1>
+     <h1 id="${id}">${name}</h1>
       <div class="show__wrap">
         <div class="content__wrap">
         <div class="image__container">
-        <img src="${show.image.medium}" alt="">
-        <div class="play-circle" id="${show.id}">
-            <i class="fas fa-play" id="${show.id}"></i>
+        <img src="${medium}" alt="">
+        <div class="play-circle" id="${id}">
+            <i class="fas fa-play" id="${id}"></i>
           </div>
         </div>
           <div>
-          <span class="${show.id}" id="summaryText">${summaryText}</span>
+          <span class="${id}" id="summaryText">${summaryText}</span>
           <span id="read-more-button" class="${btnReadMoreClass}">...read more</span>
           </div>
         </div>
         <div class="props">
-          <p>Rated: ${show.rating.average}</p>
-          <p>Genres: ${show.genres}</p>
-          <p>Status: ${show.status}</p>
-          <p>Runtime: ${show.runtime}</p>
+          <p>Rated: ${average} &star;</p>
+          <p>Genres: ${genres.join(" | ")}</p>
+          <p>Status: ${status}</p>
+          <p>Runtime: ${runtime}</p>
         </div>
       </div>
     </div>`;
-  });
+    }
+  );
   showContainer.classList.remove("hidden");
   showContainer.innerHTML = result;
   episodeContainer.innerHTML = "";
