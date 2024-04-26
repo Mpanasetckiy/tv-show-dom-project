@@ -369,7 +369,7 @@ function addCarouselPoster() {
     addCarouselPoster();
     return;
   }
-  carouselContainer.innerHTML += `<img src="${poster}">`;
+  carouselContainer.innerHTML += `<img src="${poster}" alt="${randomShow.name} poster">`;
   addedPosters.push(poster);
 }
 
